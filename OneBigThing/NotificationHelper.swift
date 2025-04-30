@@ -7,6 +7,7 @@
 
 import Foundation
 import UserNotifications
+import SwiftUI
 
 enum NotificationHelper {
     static func requestPermissionAndSchedule() {
@@ -18,12 +19,17 @@ enum NotificationHelper {
         }
     }
 
-    static func scheduleDailyReminders() {
+    static func scheduleDailyReminders(
+        morningHour: Int = 8,
+        morningMinute: Int = 0,
+        eveningHour: Int = 21,
+        eveningMinute: Int = 0
+    ) {
         let center = UNUserNotificationCenter.current()
         center.removePendingNotificationRequests(withIdentifiers: ["morning-reminder", "evening-checkin"])
 
-        let morningTrigger = calendarTrigger(hour: 8)
-        let eveningTrigger = calendarTrigger(hour: 21)
+        let morningTrigger = calendarTrigger(hour: morningHour, minute: morningMinute)
+        let eveningTrigger = calendarTrigger(hour: eveningHour, minute: eveningMinute)
 
         let morningContent = UNMutableNotificationContent()
         morningContent.title = "What's your One Big Thing today?"
@@ -37,14 +43,16 @@ enum NotificationHelper {
         center.add(UNNotificationRequest(identifier: "evening-checkin", content: eveningContent, trigger: eveningTrigger))
     }
 
-    private static func calendarTrigger(hour: Int) -> UNCalendarNotificationTrigger {
+
+    private static func calendarTrigger(hour: Int, minute: Int) -> UNCalendarNotificationTrigger {
         var dateComponents = DateComponents()
         dateComponents.hour = hour
+        dateComponents.minute = minute
         return UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
     }
-    
+
+
     static func cancelEveningReminder() {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["evening-checkin"])
     }
-
 }

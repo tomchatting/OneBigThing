@@ -26,9 +26,6 @@ struct OneBigThingApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .onAppear {
-                                    NotificationHelper.requestPermissionAndSchedule()
-                                }
         }
         .modelContainer(sharedModelContainer)
     }
