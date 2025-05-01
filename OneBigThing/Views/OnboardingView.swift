@@ -12,9 +12,9 @@ struct OnboardingView: View {
     var onFinish: () -> Void
 
     private let pages = [
-        OnboardingPage(title: "Welcome to One Big Thing", description: "Start each day with clarity by choosing your one big thing."),
-        OnboardingPage(title: "Stay Focused", description: "Keep your goal in front of you — right on your Home Screen."),
-        OnboardingPage(title: "Track Progress", description: "Review your past days and see how you’re doing.")
+        OnboardingPage(title: "Welcome to One Big Thing", description: "Start each day with clarity by choosing your one big thing.", icon: "checkmark.seal"),
+        OnboardingPage(title: "Stay Focused", description: "Focus on just completing one thing.", icon: "brain.head.profile.fill"),
+        OnboardingPage(title: "Track Progress", description: "Review your past days and see how you’re doing.", icon: "fossil.shell")
     ]
 
     var body: some View {
@@ -23,11 +23,11 @@ struct OnboardingView: View {
                 VStack(spacing: 30) {
                     Spacer()
 
-                    Image(systemName: "checkmark.seal")
+                    Image(systemName: pages[i].icon)
                         .resizable()
                         .scaledToFit()
                         .frame(height: 120)
-                        .foregroundStyle(.accent)
+                        .foregroundStyle(.secondary)
 
                     Text(pages[i].title)
                         .font(.title)
@@ -38,15 +38,15 @@ struct OnboardingView: View {
                         .font(.body)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
-
-                    Spacer()
-
+                    
                     if i == pages.count - 1 {
                         Button("Get Started") {
                             onFinish()
                         }
                         .buttonStyle(.borderedProminent)
                     }
+
+                    Spacer()
                 }
                 .padding()
                 .tag(i)
@@ -60,4 +60,5 @@ struct OnboardingView: View {
 struct OnboardingPage {
     let title: String
     let description: String
+    let icon: String
 }

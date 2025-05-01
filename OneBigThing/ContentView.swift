@@ -8,7 +8,19 @@
 import SwiftUI
 
 struct ContentView: View {
+    @AppStorage("hasLaunchedBefore") var hasLaunchedBefore = false
+
     var body: some View {
+        if hasLaunchedBefore {
+            mainTabView
+        } else {
+            OnboardingView {
+                hasLaunchedBefore = true
+            }
+        }
+    }
+
+    private var mainTabView: some View {
         TabView {
             TodayView()
                 .tabItem {
