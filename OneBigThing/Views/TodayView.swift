@@ -17,7 +17,8 @@ struct TodayView: View {
     @State private var trigger: Int = 0
     @State private var details = ""
     @State private var done = false
-    
+    @State private var currentDay = Calendar.current.startOfDay(for: Date())
+    private let midnightTimer = Timer.publish(every: 3600, on: .main, in: .common).autoconnect()
     @State private var todaysThing: Thing?
     
     var body: some View {
@@ -96,6 +97,16 @@ struct TodayView: View {
                         details = t.details
                         done = t.done
                     }
+                }
+            }
+            .onReceive(midnightTimer) { _ in
+                let now = Calendar.current.startOfDay(for: Date())
+                if now != currentDay {
+                    currentDay = now
+                    lastOpenedDate = DateFormatter.localizedString(from: now, dateStyle: .short, timeStyle: .none)
+                    todaysThing = things.first { Calendar.current.isDate($0.timestamp, inSameDayAs: now) }
+                    details = todaysThing?.details ?? ""
+                    done = todaysThing?.done ?? false
                 }
             }
             .confettiCannon(trigger: $trigger)
