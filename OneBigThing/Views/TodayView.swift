@@ -36,6 +36,7 @@ struct TodayView: View {
                                 .resizable()
                                 .frame(width: 20, height: 20)
                         }
+                        .disabled(details.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                         
                         TextField("What's your one big thing?", text: $details)
                             .disabled(done)
@@ -57,7 +58,7 @@ struct TodayView: View {
                     
                     if done {
                         ShareLink(
-                            item: "I just did my One Big Thing! 🚀 Check out the app: https://testflight.apple.com/join/W98ywUc5",
+                            item: AppEnvironmentHelper.shareMessage,
                             label: {
                                 Label("Share your achievement", systemImage: "square.and.arrow.up")
                                     .font(.headline)
@@ -118,22 +119,31 @@ struct TodayView: View {
 
 
     private func saveThing() {
+        let trimmed = details.trimmingCharacters(in: .whitespacesAndNewlines)
+        
         if let thing = todaysThing {
-            thing.details = details
-            thing.done = done
-            thing.doneTimestamp = done ? (thing.doneTimestamp ?? Date()) : nil
-        } else {
-            let newThing = Thing(timestamp: Date(), details: details)
+            if trimmed.isEmpty && !thing.done {
+                modelContext.delete(thing)
+                todaysThing = nil
+            } else {
+                thing.details = trimmed
+                thing.done = done
+                thing.doneTimestamp = done ? (thing.doneTimestamp ?? Date()) : nil
+            }
+        } else if !trimmed.isEmpty {
+            let newThing = Thing(timestamp: Date(), details: trimmed)
             newThing.done = done
             newThing.doneTimestamp = done ? Date() : nil
             modelContext.insert(newThing)
             todaysThing = newThing
         }
+        
         try? modelContext.save()
 
         if done {
             NotificationHelper.cancelEveningReminder()
         }
     }
+
 
 }
