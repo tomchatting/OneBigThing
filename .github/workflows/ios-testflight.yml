@@ -13,13 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up SSH for git access
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-
       - name: Install Fastlane
         run: gem install fastlane
 
@@ -39,12 +32,16 @@ jobs:
           echo "FASTLANE_USER=" >> $GITHUB_ENV
           echo "FASTLANE_PASSWORD=" >> $GITHUB_ENV
 
+      - name: Disable Keychain Use
+        run: echo "FASTLANE_DISABLE_KEYCHAIN=true" >> $GITHUB_ENV
+
       - name: Fetch certs and profiles using match
         run: |
           fastlane match appstore \
             --git_url "git@github.com:tomchatting/miniature-fishstick.git" \
             --type appstore \
-            --readonly false
+            --readonly false \
+            --api_key_path $(pwd)/fastlane/AuthKey.p8
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
 
