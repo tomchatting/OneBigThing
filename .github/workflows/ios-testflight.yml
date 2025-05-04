@@ -1,0 +1,41 @@
+name: iOS TestFlight
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH for git access
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Install dependencies
+        run: |
+          gem install fastlane
+          pod install --repo-update
+
+      - name: Set up environment variables for Fastlane API Key
+        run: |
+          echo "FASTLANE_APPLE_API_KEY_PATH=./AppStoreConnectAPI.p8" >> $GITHUB_ENV
+
+      - name: Write the API Key to a file
+        run: echo "${{ secrets.FASTLANE_APPLE_API_KEY }}" > ./AppStoreConnectAPI.p8
+
+      - name: Fetch certificates and provisioning profiles using match
+        run: |
+          fastlane match appstore --git_url "git@github.com:tomchatting/miniature-fishstick.git" --type appstore
+
+      - name: Build and upload to TestFlight
+        run: |
+          fastlane ios beta
