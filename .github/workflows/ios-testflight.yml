@@ -34,6 +34,9 @@ jobs:
       - name: Set FASTLANE_APPLE_API_KEY_PATH env var
         run: echo "FASTLANE_APPLE_API_KEY_PATH=$(pwd)/fastlane/AuthKey.p8" >> $GITHUB_ENV
 
+      - name: Set FASTLANE_PASSWORD (dummy value to prevent interactive prompt)
+        run: echo "FASTLANE_PASSWORD=dummy_value" >> $GITHUB_ENV
+
       - name: Fetch certs and profiles using match
         run: |
           fastlane match appstore \
