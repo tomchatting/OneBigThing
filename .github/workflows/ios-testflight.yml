@@ -25,10 +25,11 @@ jobs:
 
       - name: Write App Store Connect API Key
         run: |
+          mkdir -p fastlane
           echo "${{ secrets.FASTLANE_APPLE_API_KEY }}" > fastlane/AuthKey.p8
         env:
           FASTLANE_APPLE_API_KEY_PATH: fastlane/AuthKey.p8
-
+    
       - name: Set ENV vars
         run: |
           echo "FASTLANE_APPLE_API_KEY_PATH=$GITHUB_WORKSPACE/fastlane/AuthKey.p8" >> $GITHUB_ENV
