@@ -26,17 +26,13 @@ jobs:
       - name: Ensure fastlane directory exists
         run: mkdir -p fastlane
 
-      - name: Write API key JSON config to disk
+      - name: Write API key `.p8` to disk
         run: |
-          echo '${{ secrets.APP_STORE_CONNECT_API_KEY_JSON }}' > ./fastlane/api_key.json
+          echo '${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}' > ./fastlane/AuthKey.p8
         shell: bash
 
-      - name: Set FASTLANE_API_KEY env var
-        run: echo "FASTLANE_API_KEY=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
-    
-      - name: Set ENV vars
-        run: |
-          echo "FASTLANE_APPLE_API_KEY_PATH=$GITHUB_WORKSPACE/fastlane/AuthKey.p8" >> $GITHUB_ENV
+      - name: Set FASTLANE_APPLE_API_KEY_PATH env var
+        run: echo "FASTLANE_APPLE_API_KEY_PATH=$(pwd)/fastlane/AuthKey.p8" >> $GITHUB_ENV
 
       - name: Fetch certs and profiles using match
         run: |
