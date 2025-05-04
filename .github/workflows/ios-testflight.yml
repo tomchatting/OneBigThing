@@ -20,22 +20,25 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-      - name: Install dependencies
-        run: |
-          gem install fastlane
-          pod install --repo-update
+      - name: Install Fastlane
+        run: gem install fastlane
 
-      - name: Set up environment variables for Fastlane API Key
+      - name: Write App Store Connect API Key
         run: |
-          echo "FASTLANE_APPLE_API_KEY_PATH=./AppStoreConnectAPI.p8" >> $GITHUB_ENV
+          echo "${{ secrets.FASTLANE_APPLE_API_KEY }}" > fastlane/AuthKey.p8
+        env:
+          FASTLANE_APPLE_API_KEY_PATH: fastlane/AuthKey.p8
 
-      - name: Write the API Key to a file
-        run: echo "${{ secrets.FASTLANE_APPLE_API_KEY }}" > ./AppStoreConnectAPI.p8
-
-      - name: Fetch certificates and provisioning profiles using match
+      - name: Set ENV vars
         run: |
-          fastlane match appstore --git_url "git@github.com:tomchatting/miniature-fishstick.git" --type appstore
+          echo "FASTLANE_APPLE_API_KEY_PATH=$GITHUB_WORKSPACE/fastlane/AuthKey.p8" >> $GITHUB_ENV
+
+      - name: Fetch certs and profiles using match
+        run: |
+          fastlane match appstore \
+            --git_url "git@github.com:tomchatting/miniature-fishstick.git" \
+            --type appstore \
+            --readonly false
 
       - name: Build and upload to TestFlight
-        run: |
-          fastlane ios beta
+        run: fastlane ios beta
