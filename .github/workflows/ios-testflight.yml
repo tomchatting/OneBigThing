@@ -23,12 +23,13 @@ jobs:
       - name: Install Fastlane
         run: gem install fastlane
 
-      - name: Write App Store Connect API Key
+      - name: Write API key JSON config to disk
         run: |
-          mkdir -p fastlane
-          echo "${{ secrets.FASTLANE_APPLE_API_KEY }}" > fastlane/AuthKey.p8
-        env:
-          FASTLANE_APPLE_API_KEY_PATH: fastlane/AuthKey.p8
+          echo '${{ secrets.APP_STORE_CONNECT_API_KEY_JSON }}' > ./fastlane/api_key.json
+        shell: bash
+
+      - name: Set FASTLANE_API_KEY env var
+        run: echo "FASTLANE_API_KEY=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
     
       - name: Set ENV vars
         run: |
