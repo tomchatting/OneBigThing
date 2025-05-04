@@ -40,6 +40,8 @@ jobs:
             --git_url "git@github.com:tomchatting/miniature-fishstick.git" \
             --type appstore \
             --readonly false
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
 
       - name: Build and upload to TestFlight
         run: fastlane ios beta
